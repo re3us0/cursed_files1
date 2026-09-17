@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>КиноКоллекция</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="container header-flex">
+            <div class="logo">🎬 КиноКоллекция</div>
+            <nav>
+                <button class="nav-btn active" data-page="home">Главная</button>
+                <button class="nav-btn" data-page="collection">🎥 Коллекция</button>
+                <button class="nav-btn" data-page="add">➕ Добавить</button>
+                <button class="nav-btn" data-page="stats">📊 Статистика</button>
+                <button class="nav-btn share-btn" id="shareBtn">🔗 Поделиться</button>
+                <button class="nav-btn reset-btn" id="resetBtn">🔄 Сбросить</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" id="app"></main>
+
+    <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">✏️ Редактировать фильм</h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div class="modal-poster-preview">
+                        <img id="editPosterPreview" src="images/placeholder.jpg" alt="Постер" onerror="this.src='images/placeholder.jpg'">
+                        <div class="modal-poster-info">
+                            <label>Ссылка на постер</label>
+                            <input type="text" id="editPoster" placeholder="images/movie.jpg или https://...">
+                            <p class="hint">💡 Вставь ссылку — превью обновится автоматически</p>
+                        </div>
+                    </div>
+
+                    <label>Название *</label>
+                    <input type="text" id="editTitle" required>
+                    
+                    <label>Год выпуска</label>
+                    <input type="number" id="editYear" placeholder="2014">
+                    
+                    <label>Оценка (звёзды)</label>
+                    <div class="star-rating" id="editStarRating">
+                        <span class="star" data-value="1">☆</span>
+                        <span class="star" data-value="2">☆</span>
+                        <span class="star" data-value="3">☆</span>
+                        <span class="star" data-value="4">☆</span>
+                        <span class="star" data-value="5">☆</span>
+                        <span class="star" data-value="6">☆</span>
+                        <span class="star" data-value="7">☆</span>
+                        <span class="star" data-value="8">☆</span>
+                        <span class="star" data-value="9">☆</span>
+                        <span class="star" data-value="10">☆</span>
+                        <span id="editRatingDisplay" style="margin-left:15px; font-weight:700; color:#f5c842;">0</span>
+                    </div>
+
+                    <label>Описание фильма</label>
+                    <textarea id="editDescription" rows="3" placeholder="О чём фильм? Краткое описание..."></textarea>
+
+                    <label>Мои заметки / комментарий</label>
+                    <textarea id="editComment" rows="3" placeholder="Что ты думаешь об этом фильме?"></textarea>
+
+                    <label>Статус</label>
+                    <select id="editStatus">
+                        <option value="watched">✅ Просмотрен</option>
+                        <option value="planned">⏳ В планах</option>
+                    </select>
+                    
+                    <div style="display:flex; gap:10px; margin-top:20px;">
+                        <button type="submit" class="submit-btn" style="flex:1;">💾 Сохранить</button>
+                        <button type="button" class="submit-btn" id="modalDelete" style="background:#e04f5f; flex:0.5;">🗑 Удалить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ПРОСМОТРА ФИЛЬМА -->
+    <div class="modal-overlay" id="viewModal">
+        <div class="modal view-modal">
+            <div class="modal-header">
+                <h2 id="viewTitle">Фильм</h2>
+                <button class="modal-close" id="viewClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="view-content">
+                    <img id="viewPoster" src="images/placeholder.jpg" alt="Постер" onerror="this.src='images/placeholder.jpg'">
+                    <div class="view-details">
+                        <div class="view-year" id="viewYear"></div>
+                        <div class="view-rating" id="viewRating"></div>
+                        <div class="view-status" id="viewStatus"></div>
+                        <div class="view-section">
+                            <h4>📖 Описание</h4>
+                            <p id="viewDescription"></p>
+                        </div>
+                        <div class="view-section">
+                            <h4>💭 Мои заметки</h4>
+                            <p id="viewComment"></p>
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="button" class="submit-btn" id="viewEditBtn" style="flex:1;">✏️ Редактировать</button>
+                    <button type="button" class="submit-btn" id="viewCloseBtn" style="flex:0.5; background:#2a3240; color:#fff;">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ШАРИНГА -->
+    <div class="modal-overlay" id="shareModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🔗 Поделиться коллекцией</h2>
+                <button class="modal-close" id="shareClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color:#a0aaba; margin-bottom:15px;">Скопируй ссылку и отправь другу — он увидит твою коллекцию!</p>
+                
+                <label>Ссылка на коллекцию</label>
+                <input type="text" id="shareLink" readonly>
+
+                <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
+                    <button type="button" class="submit-btn" id="copyLinkBtn" style="flex:1;">📋 Скопировать ссылку</button>
+                    <button type="button" class="submit-btn" id="exportJsonBtn" style="flex:1; background:#2a3240; color:#fff;">💾 Экспорт JSON</button>
+                </div>
+
+                <label style="margin-top:20px;">Импорт коллекции</label>
+                <textarea id="importJson" rows="4" placeholder="Вставь JSON друга сюда..."></textarea>
+                <button type="button" class="submit-btn" id="importJsonBtn" style="background:#7fe0a6; color:#0b0e14; margin-top:10px;">📥 Импортировать</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>Трекер просмотренных фильмов</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
